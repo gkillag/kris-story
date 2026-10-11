@@ -1,0 +1,336 @@
+/* ============ ЭКРАН СТАТИСТИКИ ============ */
+.stats-scroll {
+  text-align: left;
+  padding: 6px 4px;
+}
+
+.stats-hero {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.stats-hero-title {
+  font-family: 'Georgia', serif;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg, #c9a3ff, #f0d0ff, #c9a3ff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+
+.stats-hero-subtitle {
+  color: #b896e8;
+  font-size: 11px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* ============ БЛОКИ ============ */
+.stats-block {
+  background: rgba(200, 150, 255, 0.08);
+  border: 1px solid rgba(200, 150, 255, 0.25);
+  border-radius: 20px;
+  padding: 20px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.stats-block-label {
+  color: #c9a3ff;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+  opacity: 0.85;
+}
+
+.stats-block-number {
+  font-family: 'Georgia', serif;
+  font-size: 56px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: -2px;
+  text-shadow:
+    0 0 30px rgba(200, 150, 255, 0.9),
+    0 0 60px rgba(200, 150, 255, 0.5);
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-block-sub {
+  color: #b896e8;
+  font-size: 13px;
+  margin-top: 10px;
+  letter-spacing: 1px;
+  line-height: 1.5;
+}
+
+.stats-block-sub strong {
+  color: #e0c8ff;
+  font-weight: 700;
+}
+
+/* ============ БАЛАНС 49/51 ============ */
+.balance-bar {
+  display: flex;
+  width: 100%;
+  height: 32px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin: 14px 0 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.balance-me {
+  background: linear-gradient(135deg, #9d6ee8, #c9a3ff);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 14px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #1a0b2e;
+  transition: width 1.5s cubic-bezier(0.2, 0.8, 0.4, 1);
+  width: 0;
+}
+
+.balance-her {
+  background: linear-gradient(135deg, #f0d0ff, #ffb3e6);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 14px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #1a0b2e;
+  transition: width 1.5s cubic-bezier(0.2, 0.8, 0.4, 1);
+  width: 0;
+}
+
+.balance-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #b896e8;
+  margin-top: 6px;
+}
+
+.balance-legend strong { color: #e0c8ff; }
+
+/* ============ СЕТКА 2 КОЛОНКИ ============ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.stats-mini {
+  background: rgba(200, 150, 255, 0.08);
+  border: 1px solid rgba(200, 150, 255, 0.25);
+  border-radius: 16px;
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.stats-mini-label {
+  color: #c9a3ff;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+  opacity: 0.85;
+}
+
+.stats-mini-value {
+  font-family: 'Georgia', serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.1;
+  text-shadow: 0 0 15px rgba(200, 150, 255, 0.7);
+}
+
+.stats-mini-sub {
+  color: #b896e8;
+  font-size: 10px;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* ============ ТОП-ДНИ ============ */
+.top-days-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.top-day-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: rgba(200, 150, 255, 0.06);
+  border-radius: 12px;
+  font-size: 14px;
+  color: #e8d5ee;
+}
+
+.top-day-item .rank {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  background: rgba(200, 150, 255, 0.2);
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+  color: #c9a3ff;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.top-day-item.first .rank {
+  background: linear-gradient(135deg, #f0d0ff, #ffb3e6);
+  color: #1a0b2e;
+  box-shadow: 0 0 12px rgba(255, 150, 220, 0.7);
+}
+
+.top-day-item .day-date {
+  flex: 1;
+  text-align: left;
+}
+
+.top-day-item .day-count {
+  font-family: 'Georgia', serif;
+  font-weight: 900;
+  font-size: 17px;
+  color: #c9a3ff;
+  text-shadow: 0 0 10px rgba(200, 150, 255, 0.6);
+  flex-shrink: 0;
+}
+
+/* ============ ОБЛАКО СЛОВ ============ */
+.word-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 8px 12px;
+  padding: 16px 8px;
+}
+
+.word-tag {
+  color: #e8d5ee;
+  font-weight: 600;
+  line-height: 1;
+  opacity: 0.9;
+  transition: transform 0.2s, color 0.2s;
+  cursor: default;
+}
+
+.word-tag:hover {
+  color: #fff;
+  transform: scale(1.1);
+  text-shadow: 0 0 20px rgba(200, 150, 255, 0.9);
+}
+
+/* ============ ГРАФИК ЧАСОВ ============ */
+.hours-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 120px;
+  gap: 2px;
+  padding: 10px 0 0;
+  margin-top: 8px;
+}
+
+.hour-bar {
+  flex: 1;
+  background: linear-gradient(180deg, #c9a3ff, #9d6ee8);
+  border-radius: 3px 3px 0 0;
+  min-height: 2px;
+  transition: height 1s ease;
+  position: relative;
+  opacity: 0.7;
+  box-shadow: 0 0 8px rgba(200, 150, 255, 0.4);
+}
+
+.hour-bar.peak {
+  opacity: 1;
+  background: linear-gradient(180deg, #ffb3e6, #c9a3ff);
+  box-shadow: 0 0 16px rgba(255, 150, 220, 0.9);
+}
+
+.hours-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 10px;
+  color: #b896e8;
+  opacity: 0.8;
+}
+
+/* ============ ЭМОДЗИ ============ */
+.emoji-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px 18px;
+  padding: 12px 8px;
+}
+
+.emoji-item {
+  text-align: center;
+}
+
+.emoji-item .e {
+  font-size: 28px;
+  display: block;
+  filter: drop-shadow(0 0 10px rgba(200, 150, 255, 0.6));
+}
+
+.emoji-item .c {
+  font-size: 11px;
+  color: #b896e8;
+  margin-top: 2px;
+}
+
+/* ============ ЗАБАВНЫЙ ФАКТ ============ */
+.fun-fact {
+  background: linear-gradient(135deg, rgba(255, 150, 220, 0.15), rgba(200, 150, 255, 0.1));
+  border: 1px solid rgba(255, 150, 220, 0.4);
+  border-radius: 20px;
+  padding: 18px 16px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.fun-fact-label {
+  color: #ffb3e6;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 10px;
+}
+
+.fun-fact-text {
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.fun-fact-text strong {
+  color: #ffb3e6;
+  font-weight: 800;
+}

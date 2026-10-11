@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Kris Story</title>
+
+<!-- ============ СТИЛИ ============ -->
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/stages.css">
+<link rel="stylesheet" href="css/stats.css">
+<link rel="stylesheet" href="css/credits.css">
+<link rel="stylesheet" href="css/calendar.css">
+<link rel="stylesheet" href="css/scenes.css">  
+</head>
+<body>
+
+<!-- ============ ФОНОВЫЕ СЛОИ ============ -->
+<canvas id="menuCanvas"></canvas>
+
+<div id="sceneBg"></div>
+<div id="effectsLayer">
+  <div class="fog" id="fogEffect"></div>
+  <div class="flicker" id="flickerEffect"></div>
+  <div class="dust-container" id="dustEffect"></div>
+  <div class="rain-container" id="rainEffect"></div>
+</div>
+<div id="vignette"></div>
+
+<div class="flash-overlay" id="flashOverlay"></div>
+<div class="blood-flash" id="bloodFlash"></div>
+
+<!-- ============ КНОПКА МУЗЫКИ ============ -->
+<button id="musicBtn" onclick="toggleMusic()" title="Музыка">🔇</button>
+
+<!-- ============ ТОСТ ============ -->
+<div class="toast" id="toast">
+  <span class="toast-icon">🔒</span>
+  <span class="toast-text" id="toastText"></span>
+</div>
+
+<!-- ============ СЦЕНА / КАРТОЧКА ============ -->
+<div class="scene">
+  <div class="card" id="card">
+
+    <!-- МЕНЮ -->
+    <div id="stageMenu" class="stage-fade">
+      <div class="rune-decoration">
+        <span>✦</span><span>✧</span><span>❈</span><span>✧</span><span>✦</span>
+      </div>
+      <div class="menu-title">KRIS STORY</div>
+      <div class="menu-divider"></div>
+      <div class="menu-subtitle">tech demo</div>
+      <div class="menu-buttons">
+        <button onclick="startDemo()">▶ Технодемка</button>
+        <button class="stats-button" onclick="openStats()">📊 Статистика</button>
+        <button class="secondary" onclick="openCalendar()">📅 Календарь</button>
+        <button class="secondary" onclick="showSettings()">⚙ Настройки</button>
+      </div>
+      <div class="rune-decoration" style="margin-top: 24px;">
+        <span>❈</span><span>✧</span><span>✦</span><span>✧</span><span>❈</span>
+      </div>
+    </div>
+
+    <!-- НАСТРОЙКИ -->
+    <div id="stageSettings" class="hidden">
+      <h1>⚙ Настройки</h1>
+      <div class="settings-group">
+        <div class="settings-label"><span>🔊 Общая громкость</span><span class="settings-value" id="masterVal">70%</span></div>
+        <input type="range" id="masterVolume" min="0" max="100" value="70">
+      </div>
+      <div class="settings-group">
+        <div class="settings-label"><span>⌨ Звук печати</span><span class="settings-value" id="typingVal">40%</span></div>
+        <input type="range" id="typingVolume" min="0" max="100" value="40">
+      </div>
+      <div class="settings-group">
+        <div class="settings-label"><span>🎵 Фоновая музыка</span><span class="settings-value" id="musicVal">50%</span></div>
+        <input type="range" id="musicVolume" min="0" max="100" value="50">
+      </div>
+      <div class="settings-group">
+        <div class="toggle-row"><span>🔇 Полная тишина</span><div class="toggle-switch" id="muteToggle" onclick="toggleMute()"></div></div>
+      </div>
+      <button class="secondary" onclick="hideSettings()" style="margin-top: 22px;">← Назад в меню</button>
+    </div>
+
+    <!-- ТЕХНОДЕМКА -->
+    <div id="stageDemo" class="hidden">
+      <div class="novel-scene">
+        <div class="demo-emoji">🛠️</div>
+        <div class="demo-text"><span class="highlight">Разработчик пока чешет очко...</span></div>
+        <div class="demo-hint">переход к статистике</div>
+      </div>
+    </div>
+
+    <!-- КАЛЕНДАРЬ -->
+    <div id="stageCalendar" class="hidden">
+      <h1>📅 Наш календарь</h1>
+      <div class="calendar-year-nav">
+        <button class="year-arrow" id="yearPrev" onclick="changeYear(-1)">‹</button>
+        <div class="year-display" id="yearDisplay">2026</div>
+        <button class="year-arrow" id="yearNext" onclick="changeYear(1)">›</button>
+      </div>
+      <div class="calendar-months-grid" id="monthsGrid"></div>
+      <div id="calendarDetailContainer"></div>
+      <div class="calendar-legend">
+        <span><span class="legend-dot"></span> Событие</span>
+        <span><span class="legend-dot gold"></span> Сегодня</span>
+      </div>
+      <button class="secondary back-btn" onclick="backToMenuFromCalendar()">← Назад в меню</button>
+    </div>
+
+    <!-- СТАТИСТИКА -->
+    <div id="stageStats" class="hidden">
+      <div class="stats-scroll">
+        <div class="stats-hero">
+          <div class="stats-hero-title">Наша статистика</div>
+          <div class="stats-hero-subtitle">KRIS STORY</div>
+        </div>
+
+        <div class="stats-block">
+          <div class="stats-block-label">сообщений за всё время</div>
+          <div class="stats-block-number" id="statTotal">0</div>
+          <div class="stats-block-sub">
+            за <strong id="statDays">0</strong> дней<br>
+            это <strong id="statPerDay">0</strong> сообщений каждый день
+          </div>
+        </div>
+
+        <div class="stats-block">
+          <div class="stats-block-label">кто больше писал</div>
+          <div class="balance-bar">
+            <div class="balance-me" id="balanceMe">49%</div>
+            <div class="balance-her" id="balanceHer">51%</div>
+          </div>
+          <div class="balance-legend">
+            <span><strong id="legendMe">Даня</strong> · <span id="countMe">0</span></span>
+            <span><span id="countHer">0</span> · <strong id="legendHer">Крисс</strong></span>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stats-mini">
+            <div class="stats-mini-label">средняя длина</div>
+            <div class="stats-mini-value" id="statAvgMe">0</div>
+            <div class="stats-mini-sub">символов · Даня</div>
+          </div>
+          <div class="stats-mini">
+            <div class="stats-mini-label">средняя длина</div>
+            <div class="stats-mini-value" id="statAvgHer">0</div>
+            <div class="stats-mini-sub">символов · Крисс</div>
+          </div>
+        </div>
+
+        <div class="stats-block">
+          <div class="stats-block-label">самый болтливый день</div>
+          <div class="stats-block-number" id="statBestCount">0</div>
+          <div class="stats-block-sub">сообщений · <strong id="statBestDay">—</strong></div>
+          <div class="top-days-list" id="topDaysList"></div>
+        </div>
+
+        <div class="stats-block">
+          <div class="stats-block-label">когда мы писали</div>
+          <div class="hours-chart" id="hoursChart"></div>
+          <div class="hours-labels">
+            <span>00</span><span>06</span><span>12</span><span>18</span><span>23</span>
+          </div>
+          <div class="stats-block-sub" style="margin-top: 14px;">
+            пик общения — <strong id="peakHour">20:00</strong>
+          </div>
+        </div>
+
+        <div class="stats-block">
+          <div class="stats-block-label">наши слова</div>
+          <div class="word-cloud" id="wordCloud"></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stats-mini" style="text-align: left;">
+            <div class="stats-mini-label" style="text-align: center;">чаще всего от Дани</div>
+            <div id="myWordsList" style="font-size: 13px; color: #e8d5ee; line-height: 1.8;"></div>
+          </div>
+          <div class="stats-mini" style="text-align: left;">
+            <div class="stats-mini-label" style="text-align: center;">чаще всего от Крисс</div>
+            <div id="herWordsList" style="font-size: 13px; color: #e8d5ee; line-height: 1.8;"></div>
+          </div>
+        </div>
+
+        <div class="stats-block">
+          <div class="stats-block-label">топ эмодзи</div>
+          <div class="emoji-list" id="emojiList"></div>
+        </div>
+
+        <div class="fun-fact">
+          <div class="fun-fact-label">забавный факт</div>
+          <div class="fun-fact-text" id="funFactText"></div>
+        </div>
+
+        <button class="secondary back-btn" onclick="backToMenuFromStats()" style="margin-top: 24px;">← Назад в меню</button>
+      </div>
+    </div>
+
+    <!-- ТИТРЫ -->
+    <div id="stageCredits" class="hidden">
+      <div class="credits-stage">
+        <div class="credits-top-bar">
+          <button class="credits-back-btn" onclick="backToMenuFromCredits()">← В меню</button>
+        </div>
+
+        <div class="credits-viewport" id="creditsViewport">
+          <div class="credits-scroll" id="creditsScroll">
+
+            <div class="credits-item">
+              <div class="credits-item-title">KRIS STORY</div>
+              <div class="credits-item-subtitle">титры</div>
+              <div class="credits-item-divider"></div>
+            </div>
+
+            <div class="credits-item">
+              <div class="credits-item-label">за всё время</div>
+              <div class="credits-item-number" id="creditsTotal">0</div>
+              <div class="credits-item-text">сообщений</div>
+            </div>
+
+            <div class="credits-item"><div class="credits-item-divider"></div></div>
+
+            <div class="credits-item">
+              <div class="credits-item-label">период</div>
+              <div class="credits-item-number" id="creditsDays">0</div>
+              <div class="credits-item-text">дней вместе в переписке</div>
+            </div>
+
+            <div class="credits-item"><div class="credits-item-divider"></div></div>
+
+            <div class="credits-item">
+              <div class="credits-item-label">в среднем</div>
+              <div class="credits-item-number" id="creditsPerDay">0</div>
+              <div class="credits-item-text">сообщений каждый день<br><strong>это одно сообщение каждые 13 минут</strong></div>
+            </div>
+
+            <div class="credits-item"><div class="credits-item-divider"></div></div>
+
+            <div class="credits-item">
+              <div class="credits-item-label">самый болтливый день</div>
+              <div class="credits-item-number" id="creditsBestCount">0</div>
+              <div class="credits-item-text"><strong id="creditsBestDay">—</strong></div>
+            </div>
+
+            <div class="credits-item"><div class="credits-item-divider"></div></div>
+
+            <div class="credits-item">
+              <div class="credits-item-label">чаще всего говорили</div>
+              <div class="credits-item-emoji" style="font-size: 22px; letter-spacing: 2px; line-height: 1.8;" id="creditsTopWords"></div>
+            </div>
+
+            <div class="credits-item"><div class="credits-item-divider"></div></div>
+
+            <div class="credits-item">
+              <div class="credits-item-label">наши эмодзи</div>
+              <div class="credits-item-emoji" id="creditsTopEmoji"></div>
+            </div>
+
+            <div class="credits-item"><div class="credits-item-divider"></div></div>
+
+            <div class="credits-item">
+              <div class="credits-item-text" style="font-family: Georgia, serif; font-size: 18px;">
+                Спасибо, что ты рядом.
+              </div>
+              <div class="credits-item-emoji">❤️ ❤️ ❤️</div>
+              <div class="credits-item-title" style="font-size: 30px; margin-top: 14px;">Крисс</div>
+            </div>
+
+            <div style="height: 100px;"></div>
+
+          </div>
+        </div>
+
+        <div class="credits-progress" id="creditsProgress">
+          <div class="credits-progress-fill" id="creditsProgressFill"></div>
+          <div class="credits-progress-thumb" id="creditsProgressThumb" style="top: 0%;"></div>
+        </div>
+
+        <div class="credits-controls">
+          <button class="credits-ctrl-btn" id="playPauseBtn" onclick="toggleCreditsPlay()" title="Пауза">⏸</button>
+          <button class="credits-ctrl-btn" id="speedBtn" onclick="toggleCreditsSpeed()" title="Скорость">1×</button>
+          <button class="credits-ctrl-btn" onclick="restartCredits()" title="Сначала">⟲</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ СКРИПТЫ ============ -->
+<script src="data/events.js"></script>
+<script src="js/config.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/effects.js"></script>
+<script src="js/parser.js"></script>          <!-- НОВЫЙ -->
+<script src="js/scenes.js"></script>          <!-- ОБНОВЛЁННЫЙ -->
+<script src="js/stats.js"></script>
+<script src="js/credits.js"></script>
+<script src="js/calendar.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

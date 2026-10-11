@@ -1,0 +1,189 @@
+/* ============ СЦЕНА НОВЕЛЛЫ ============ */
+.novel-scene {
+  position: relative;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+/* ============ ПЕРСОНАЖ ============ */
+.character {
+  position: absolute;
+  bottom: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  max-width: 280px;
+  height: auto;
+  max-height: 340px;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  filter: drop-shadow(0 0 30px rgba(200, 150, 255, 0.4));
+  pointer-events: none;
+  z-index: 1;
+  user-select: none;
+}
+
+.character.show {
+  opacity: 1;
+  animation: charBreathe 3.5s ease-in-out infinite;
+}
+
+@keyframes charBreathe {
+  0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
+  50%      { transform: translateX(-50%) translateY(-6px) scale(1.01); }
+}
+
+/* Появление слева */
+.character.enter-left {
+  transform: translateX(-200%) scale(0.9);
+  opacity: 0;
+}
+.character.enter-left.show {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
+
+/* Появление справа */
+.character.enter-right {
+  transform: translateX(200%) scale(0.9);
+  opacity: 0;
+}
+.character.enter-right.show {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
+
+/* Fallback — если спрайт не загрузился */
+.character-emoji {
+  position: absolute;
+  bottom: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 120px;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  filter: drop-shadow(0 0 30px rgba(200, 150, 255, 0.6));
+  pointer-events: none;
+  z-index: 1;
+}
+.character-emoji.show {
+  opacity: 1;
+  animation: charBreathe 3.5s ease-in-out infinite;
+}
+
+/* ============ ДИАЛОГОВОЕ ОКНО ============ */
+.dialogue-box {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+  background: rgba(10, 4, 15, 0.88);
+  border: 1px solid rgba(200, 150, 255, 0.35);
+  border-radius: 22px;
+  padding: 20px 22px;
+  min-height: 160px;
+  text-align: left;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.dialogue-box:hover {
+  box-shadow: 0 10px 40px rgba(160, 100, 255, 0.35);
+}
+.dialogue-box:active {
+  transform: scale(0.99);
+}
+
+.speaker-name {
+  color: #c9a3ff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(200, 150, 255, 0.6);
+  min-height: 18px;
+}
+
+.dialogue-text {
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 60px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.cursor-blink {
+  display: inline-block;
+  width: 2px;
+  height: 16px;
+  background: #c9a3ff;
+  margin-left: 3px;
+  vertical-align: middle;
+  animation: blink 0.8s step-end infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+.continue-hint {
+  position: absolute;
+  bottom: 10px;
+  right: 18px;
+  color: #c9a3ff;
+  font-size: 14px;
+  opacity: 0;
+  animation: hintBounce 1.4s ease-in-out infinite;
+}
+.continue-hint.show {
+  opacity: 0.8;
+}
+@keyframes hintBounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(4px); }
+}
+/* ============ КНОПКИ ВЫБОРА ============ */
+.choices-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(5, 2, 10, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+  animation: fadeIn 0.3s ease;
+  padding: 20px;
+}
+
+.choice-btn {
+  margin-top: 0;
+  max-width: 320px;
+  width: 100%;
+  padding: 16px 24px;
+  font-size: 16px;
+  background: rgba(30, 12, 45, 0.95);
+  color: #e0c8ff;
+  border: 1px solid rgba(200, 150, 255, 0.5);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.choice-btn:hover {
+  background: linear-gradient(135deg, #c9a3ff, #9d6ee8);
+  color: #1a0b2e;
+  border-color: rgba(255, 200, 255, 0.8);
+  transform: scale(1.03);
+  box-shadow: 0 10px 40px rgba(200, 150, 255, 0.6);
+}
+
+.choice-btn::before { display: none; }

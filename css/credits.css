@@ -1,0 +1,252 @@
+/* ============ ЭКРАН ТИТРОВ ============ */
+#stageCredits {
+  padding: 0 !important;
+  overflow: hidden !important;
+  max-height: 92vh !important;
+}
+
+.credits-stage {
+  position: relative;
+  width: 100%;
+  height: 88vh;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(10, 4, 20, 0.6), rgba(10, 4, 20, 0.9));
+  border-radius: 30px;
+}
+
+/* ============ ВЬЮПОРТ С АВТОПРОКРУТКОЙ ============ */
+.credits-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom,
+    transparent 0%,
+    black 10%,
+    black 88%,
+    transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent 0%,
+    black 10%,
+    black 88%,
+    transparent 100%);
+}
+
+.credits-scroll {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 20px 24px 60px;
+  text-align: center;
+  transition: transform 0.1s linear;
+  will-change: transform;
+}
+
+/* ============ ЭЛЕМЕНТЫ ТИТРОВ ============ */
+.credits-item {
+  margin-bottom: 36px;
+}
+
+.credits-item-title {
+  font-family: 'Georgia', serif;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg, #c9a3ff, #f0d0ff, #c9a3ff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 4s linear infinite;
+}
+
+.credits-item-subtitle {
+  color: #b896e8;
+  font-size: 11px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  opacity: 0.8;
+}
+
+.credits-item-label {
+  color: #c9a3ff;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+  opacity: 0.85;
+}
+
+.credits-item-number {
+  font-family: 'Georgia', serif;
+  font-size: 62px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: -2px;
+  text-shadow:
+    0 0 30px rgba(200, 150, 255, 0.9),
+    0 0 60px rgba(200, 150, 255, 0.5);
+  margin: 8px 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.credits-item-text {
+  color: #e8d5ee;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.credits-item-text strong {
+  color: #c9a3ff;
+}
+
+.credits-item-emoji {
+  font-size: 32px;
+  letter-spacing: 10px;
+  margin: 14px 0;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+.credits-item-divider {
+  width: 60px;
+  height: 1px;
+  margin: 20px auto;
+  background: linear-gradient(90deg, transparent, #c9a3ff, transparent);
+  box-shadow: 0 0 10px rgba(200, 150, 255, 0.8);
+}
+
+/* ============ ПОЛЗУНОК ПРОГРЕССА (справа) ============ */
+.credits-progress {
+  position: absolute;
+  top: 12%;
+  bottom: 12%;
+  right: 6px;
+  width: 4px;
+  background: rgba(200, 150, 255, 0.15);
+  border-radius: 4px;
+  z-index: 5;
+  cursor: pointer;
+}
+
+.credits-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0%;
+  background: linear-gradient(180deg, #c9a3ff, #9d6ee8);
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(200, 150, 255, 0.8);
+  transition: height 0.1s linear;
+  pointer-events: none;
+}
+
+.credits-progress-thumb {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #c9a3ff;
+  box-shadow: 0 0 15px rgba(200, 150, 255, 0.9);
+  transition: top 0.1s linear;
+  pointer-events: none;
+}
+
+/* ============ ВЕРХНЯЯ ПАНЕЛЬ ============ */
+.credits-top-bar {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.credits-top-bar > * {
+  pointer-events: auto;
+}
+
+.credits-back-btn {
+  padding: 8px 16px;
+  font-size: 12px;
+  background: rgba(30, 12, 45, 0.85);
+  color: #e0c8ff;
+  border: 1px solid rgba(200, 150, 255, 0.4);
+  border-radius: 30px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin: 0;
+  max-width: none;
+  width: auto;
+  box-shadow: none;
+}
+.credits-back-btn:hover {
+  background: rgba(50, 25, 70, 0.9);
+  border-color: rgba(200, 150, 255, 0.7);
+  transform: none;
+}
+.credits-back-btn::before { display: none; }
+
+/* ============ НИЖНЯЯ ПАНЕЛЬ УПРАВЛЕНИЯ ============ */
+.credits-controls {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: rgba(20, 8, 35, 0.9);
+  border: 1px solid rgba(200, 150, 255, 0.35);
+  border-radius: 50px;
+  padding: 8px 12px;
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(160, 100, 255, 0.25);
+  z-index: 10;
+}
+
+.credits-ctrl-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(200, 150, 255, 0.4);
+  background: rgba(200, 150, 255, 0.12);
+  color: #c9a3ff;
+  font-size: 17px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  padding: 0;
+  margin: 0;
+  max-width: none;
+  font-weight: 600;
+  box-shadow: none;
+}
+.credits-ctrl-btn:hover {
+  background: rgba(200, 150, 255, 0.28);
+  border-color: rgba(200, 150, 255, 0.7);
+  transform: scale(1.08);
+}
+.credits-ctrl-btn::before { display: none; }
+.credits-ctrl-btn.active {
+  background: linear-gradient(135deg, #c9a3ff, #9d6ee8);
+  color: #1a0b2e;
+  border-color: rgba(255, 200, 255, 0.8);
+  box-shadow: 0 0 20px rgba(200, 150, 255, 0.7);
+}
