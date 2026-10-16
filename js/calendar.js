@@ -233,19 +233,49 @@ function renderEventInfo(day, month, event) {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  let targetYear = now.getFullYear();
-  let target = new Date(targetYear, month - 1, day);
+  // Считаем от даты события в том году, который сейчас открыт в календаре.
+  // Исключение: разовое (не cycle) событие с точной датой из прошлого года —
+  // оно уже не наступит, поэтому считаем по его реальной дате, а не по просмотру.
+  let viewYear = currentCalendarYear;
+  if (!event.cycle) {
+    const [ey] = String(event.date).split('-').map(Number);
+    if (ey && ey < now.getFullYear()) viewYear = ey;
+  }
+  const viewDate = new Date(viewYear, month - 1, day);
 
-  // Для ежегодного — если уже прошло, берём следующий год
-  if (event.cycle && target < today) {
-    target = new Date(targetYear + 1, month - 1, day);
+  const pluralDays = (n) => {
+    const mod10 = n % 10;
+    const mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return 'день';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'дня';
+    return 'дней';
+  };
+
+  const daysDiff = Math.round((viewDate - today) / (1000 * 60 * 60 * 24));
+
+  // Прошедшее событие — показываем статус и «N дней/месяцев/лет назад»
+  if (daysDiff < 0) {
+    const passed = Math.abs(daysDiff);
+    let agoText;
+    if (passed < 30) {
+      agoText = `${passed} ${pluralDays(passed)} назад`;
+    } else if (passed < 365) {
+      const months = Math.floor(passed / 30);
+      agoText = `${months} ${months === 1 ? 'месяц' : (months < 5 ? 'месяца' : 'месяцев')} назад`;
+    } else {
+      const years = Math.floor(passed / 365);
+      agoText = `${years} ${years === 1 ? 'год' : (years < 5 ? 'года' : 'лет')} назад`;
+    }
+    return `
+      <div class="event-info">
+        <div class="event-info-title">${event.emoji} ${event.label}</div>
+        <div class="event-info-days past">${passed}</div>
+        <div class="event-info-sub">✅ событие уже произошло · ${agoText}</div>
+      </div>
+    `;
   }
 
-  const diffMs = target - today;
-  const daysLeft = Math.round(diffMs / (1000 * 60 * 60 * 24));
-  const isToday = daysLeft === 0;
-
-  if (isToday) {
+  if (daysDiff === 0) {
     return `
       <div class="event-info">
         <div class="event-info-title">${event.emoji} ${event.label}</div>
@@ -253,24 +283,17 @@ function renderEventInfo(day, month, event) {
         <div class="event-info-sub">празднуем 🎊</div>
       </div>
     `;
-  } else if (daysLeft > 0) {
-    const word = daysLeft === 1 ? 'день' : (daysLeft < 5 ? 'дня' : 'дней');
-    return `
-      <div class="event-info">
-        <div class="event-info-title">${event.emoji} ${event.label}</div>
-        <div class="event-info-days">${daysLeft}</div>
-        <div class="event-info-sub">${word} до события</div>
-      </div>
-    `;
-  } else {
-    return `
-      <div class="event-info">
-        <div class="event-info-title">${event.emoji} ${event.label}</div>
-        <div class="event-info-days past">${Math.abs(daysLeft)}</div>
-        <div class="event-info-sub">дней назад</div>
-      </div>
-    `;
   }
+
+  // Разовое событие из будущего года или ежегодное — обратный отсчёт
+  const daysLeft = daysDiff;
+  return `
+    <div class="event-info">
+      <div class="event-info-title">${event.emoji} ${event.label}</div>
+      <div class="event-info-days">${daysLeft}</div>
+      <div class="event-info-sub">${pluralDays(daysLeft)} до события</div>
+    </div>
+  `;
 }
 
 function isLeapYear(y) {
@@ -455,4 +478,4 @@ window.selectEmoji = selectEmoji;
 window.toggleCycle = toggleCycle;
 window.closeEventEditor = closeEventEditor;
 window.saveEvent = saveEvent;
-window.deleteEvent = deleteEvent;
+window.deleteEvent = deleteEvent;
