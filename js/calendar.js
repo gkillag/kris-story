@@ -233,13 +233,18 @@ function renderEventInfo(day, month, event) {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
+  // Год записи в дате события (YYYY-MM-DD)
+  const eventYear = Number(String(event.date).split('-')[0]) || null;
+
   // Считаем от даты события в том году, который сейчас открыт в календаре.
-  // Исключение: разовое (не cycle) событие с точной датой из прошлого года —
-  // оно уже не наступит, поэтому считаем по его реальной дате, а не по просмотру.
+  // Исключения (событие уже НЕ наступит — показываем «произошло ... назад»):
+  //  - разовые (не cycle): всегда по своей реальной дате;
+  //  - ежегодные (cycle), если дата записана будущим годом относительно
+  //    сегодняшнего (например, событие добавлено в 2026 как '2027-04-05'):
+  //    в просмотре 2026 такой день уже прошёл и повториться не может.
   let viewYear = currentCalendarYear;
-  if (!event.cycle) {
-    const [ey] = String(event.date).split('-').map(Number);
-    if (ey && ey < now.getFullYear()) viewYear = ey;
+  if (!event.cycle || (eventYear && eventYear > now.getFullYear())) {
+    if (eventYear) viewYear = eventYear;
   }
   const viewDate = new Date(viewYear, month - 1, day);
 
@@ -478,4 +483,4 @@ window.selectEmoji = selectEmoji;
 window.toggleCycle = toggleCycle;
 window.closeEventEditor = closeEventEditor;
 window.saveEvent = saveEvent;
-window.deleteEvent = deleteEvent;
+window.deleteEvent = deleteEvent;
