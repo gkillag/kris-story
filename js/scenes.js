@@ -112,9 +112,11 @@ async function startScenes() {
     <div class="novel-scene">
       <img id="character" class="character" src="" alt="" onerror="onCharError()">
       <div id="characterEmoji" class="character-emoji" style="display: none;"></div>
+      <!-- Клик по окну листает сцену; stopPropagation на блоке текста,
+           чтобы выделение/прокрутка длинного текста не вызывала переход -->
       <div class="dialogue-box" id="dialogueBox" onclick="advanceScene()">
         <div class="speaker-name" id="speakerName"></div>
-        <div class="dialogue-text" id="dialogueText"></div>
+        <div class="dialogue-text" id="dialogueText" onclick="event.stopPropagation()"></div>
         <div class="continue-hint" id="continueHint">▼</div>
       </div>
       <div class="playback-bar">
@@ -214,6 +216,9 @@ function showScene(scene) {
     typingInterval = setInterval(() => {
       if (segIndex < segments.length) {
         appendSegment(textSpan, segments[segIndex]);
+        // Держим печатающийся текст в поле зрения: окно статично,
+        // поэтому при переполнении прокручиваем блок текста вниз.
+        textEl.scrollTop = textEl.scrollHeight;
         segIndex++;
         if (segments[segIndex - 1].ch && typeof playTypingSound === 'function') {
           playTypingSound();
@@ -245,6 +250,10 @@ function appendSegment(container, seg) {
 // Мгновенный рендер всех сегментов
 function renderSegments(segments, container) {
   for (const seg of segments) appendSegment(container, seg);
+  // после мгновенного показа прокрутим длинный текст к концу —
+  // последние слова должны быть видны в статичном окне
+  const box = document.getElementById('dialogueText');
+  if (box && container === box.firstElementChild) box.scrollTop = box.scrollHeight;
 }
 
 // Вызывается, когда текст напечатан (или его нет)

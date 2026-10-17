@@ -2,9 +2,18 @@
 .novel-scene {
   position: relative;
   min-height: 480px;
+  /* Фиксированная высота сцены (с запасом под статичный диалог),
+     чтобы окно не «прыгало» между короткими и длинными репликами */
+  height: max(480px, calc(100vh - 360px));
   display: flex;
   flex-direction: column;
   padding: 0;
+}
+
+@media (max-width: 480px) {
+  .novel-scene {
+    height: max(480px, calc(100vh - 390px));
+  }
 }
 
 /* ============ ПЕРСОНАЖ ============ */
@@ -75,6 +84,8 @@
 }
 
 /* ============ ДИАЛОГОВОЕ ОКНО ============ */
+/* Статичная высота: окно НЕ расширяется по мере появления текста —
+   размер фиксирован, длинный текст прокручивается внутри блока текста. */
 .dialogue-box {
   position: relative;
   z-index: 2;
@@ -83,13 +94,23 @@
   border: 1px solid rgba(200, 150, 255, 0.35);
   border-radius: 22px;
   padding: 20px 22px;
-  min-height: 160px;
+  height: 170px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
   text-align: left;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+}
+
+@media (max-width: 480px) {
+  .dialogue-box {
+    height: 190px;
+    padding: 16px 18px;
+  }
 }
 .dialogue-box:hover {
   box-shadow: 0 10px 40px rgba(160, 100, 255, 0.35);
@@ -109,12 +130,30 @@
   min-height: 18px;
 }
 
+/* Блок текста занимает всё свободное место внутри статичного окна.
+   Если реплика длиннее окна — прокручивается внутри (окно не растёт). */
 .dialogue-text {
   color: #fff;
   font-size: 16px;
   line-height: 1.6;
-  min-height: 60px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  /* тонкий декоративный скроллбар в стиле темы */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 150, 255, 0.4) transparent;
+}
+
+.dialogue-text::-webkit-scrollbar {
+  width: 4px;
+}
+.dialogue-text::-webkit-scrollbar-thumb {
+  background: rgba(200, 150, 255, 0.4);
+  border-radius: 4px;
+}
+.dialogue-text::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 /* Разметка текста сценария: [red], [gold], *жирный*, ~курсив~ */
