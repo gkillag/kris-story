@@ -117,6 +117,24 @@
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
+/* Разметка текста сценария: [red], [gold], *жирный*, ~курсив~ */
+.dialogue-text .txt-red {
+  color: #ff7b93;
+  font-weight: 600;
+}
+.dialogue-text .txt-gold {
+  color: #ffd47b;
+  font-weight: 600;
+}
+.dialogue-text strong {
+  color: #e8d8ff;
+  font-weight: 700;
+}
+.dialogue-text em {
+  font-style: italic;
+  opacity: 0.85;
+}
+
 .cursor-blink {
   display: inline-block;
   width: 2px;
@@ -187,3 +205,43 @@
 }
 
 .choice-btn::before { display: none; }
+/* ============ ПАНЕЛЬ ВОСПРОИЗВЕДЕНИЯ (пауза / автопрокрутка / выход) ============ */
+.playback-bar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 30;
+}
+
+.pb-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(200, 150, 255, 0.4);
+  background: rgba(30, 12, 45, 0.75);
+  color: #e0c8ff;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 0;
+  line-height: 1;
+}
+
+.pb-btn:hover {
+  background: rgba(90, 40, 140, 0.85);
+  border-color: rgba(220, 170, 255, 0.8);
+  transform: scale(1.06);
+}
+
+/* Подчёркнутый текст (_..._) в репликах */
+.dialogue-text u {
+  text-decoration: none;
+  border-bottom: 1px solid rgba(224, 200, 255, 0.6);
+}
