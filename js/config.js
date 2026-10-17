@@ -132,4 +132,4 @@ window.TG_STATS = TG_STATS;
 window.GAME_VERSION = GAME_VERSION;
 window.CONFIG = CONFIG;
 window.NAME = CONFIG.herName;
-window.START_DATE = CONFIG.startDate;
+window.START_DATE = CONFIG.startDate;

@@ -137,4 +137,4 @@ window.showToast = showToast;
 window.calcDaysSince = calcDaysSince;
 window.formatStartDate = formatStartDate;
 window.renderGameVersion = renderGameVersion;
-window.renderMenuDays = renderMenuDays;
+window.renderMenuDays = renderMenuDays;
