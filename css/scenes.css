@@ -139,6 +139,12 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  /* длинный текст можно выделять/прокручивать внутри окна */
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: text;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
   /* тонкий декоративный скроллбар в стиле темы */
   scrollbar-width: thin;
