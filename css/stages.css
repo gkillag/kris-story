@@ -1,4 +1,55 @@
 /* ============ МЕНЮ ============ */
+#stageMenu {
+  position: relative;
+}
+
+/* Мягкое свечение-«аврора» за меню */
+.menu-aura {
+  position: absolute;
+  inset: -40px;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 8%, rgba(160, 100, 255, 0.16), transparent 70%),
+    radial-gradient(ellipse 50% 35% at 15% 85%, rgba(255, 120, 200, 0.10), transparent 70%),
+    radial-gradient(ellipse 50% 35% at 85% 80%, rgba(120, 200, 255, 0.08), transparent 70%);
+  animation: auraDrift 14s ease-in-out infinite alternate;
+}
+@keyframes auraDrift {
+  0%   { transform: translate(-2%, 0) scale(1); opacity: 0.8; }
+  100% { transform: translate(2%, -2%) scale(1.08); opacity: 1; }
+}
+
+/* Герб K♥R */
+.menu-crest {
+  font-family: 'Georgia', serif;
+  font-size: 20px;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+  color: #e8c9ff;
+  text-shadow: 0 0 14px rgba(200, 150, 255, 0.9);
+  animation: crestBreath 3.5s ease-in-out infinite;
+}
+.menu-crest .crest-k { color: #a77fff; }
+.menu-crest .crest-r { color: #ff9ad5; }
+.menu-crest .crest-heart {
+  display: inline-block;
+  color: #ff5f9e;
+  animation: heartBeat 1.6s ease-in-out infinite;
+  text-shadow: 0 0 12px rgba(255, 95, 158, 0.9);
+}
+@keyframes crestBreath {
+  0%, 100% { opacity: 0.85; }
+  50%      { opacity: 1; }
+}
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  12%      { transform: scale(1.25); }
+  24%      { transform: scale(1); }
+  36%      { transform: scale(1.18); }
+  48%      { transform: scale(1); }
+}
+
 .menu-title {
   font-size: 44px;
   font-weight: 900;
@@ -19,17 +70,62 @@
   font-size: 12px;
   letter-spacing: 6px;
   text-transform: uppercase;
-  margin-bottom: 30px;
+  margin-bottom: 18px;
   opacity: 0.85;
   font-family: 'Georgia', serif;
 }
 
+/* Разделитель с искрами по краям */
 .menu-divider {
-  width: 80px;
+  position: relative;
+  width: 140px;
   height: 2px;
-  margin: 0 auto 30px;
+  margin: 0 auto 18px;
   background: linear-gradient(90deg, transparent, #c9a3ff, transparent);
   box-shadow: 0 0 12px rgba(200, 150, 255, 0.8);
+}
+.menu-divider::before,
+.menu-divider::after {
+  content: '✦';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-52%);
+  font-size: 11px;
+  color: #e8c9ff;
+  text-shadow: 0 0 8px rgba(232, 201, 255, 0.9);
+  animation: runePulse 3s ease-in-out infinite;
+}
+.menu-divider::before { left: -22px; }
+.menu-divider::after  { right: -22px; animation-delay: 1.5s; }
+
+/* Медальон «дней вместе» */
+.menu-days {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 auto 22px;
+  padding: 8px 18px;
+  width: fit-content;
+  border: 1px solid rgba(201, 163, 255, 0.35);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(80, 40, 120, 0.35), rgba(30, 15, 50, 0.35));
+  box-shadow:
+    inset 0 0 18px rgba(160, 100, 255, 0.15),
+    0 0 16px rgba(160, 100, 255, 0.25);
+}
+.menu-days-num {
+  font-family: 'Georgia', serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: #ffd9f2;
+  text-shadow: 0 0 14px rgba(255, 150, 220, 0.7);
+}
+.menu-days-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #b896e8;
 }
 
 .menu-buttons {
@@ -37,6 +133,43 @@
   flex-direction: column;
   gap: 14px;
   align-items: center;
+}
+
+/* Бегущая строка под кнопками */
+.menu-ticker {
+  overflow: hidden;
+  width: 85%;
+  max-width: 380px;
+  margin: 18px auto 0;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: rgba(201, 163, 255, 0.65);
+  mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+}
+.menu-ticker span {
+  display: inline-block;
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: tickerScroll 22s linear infinite;
+}
+@keyframes tickerScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Версия игры — правый нижний угол карточки */
+.game-version {
+  position: absolute;
+  right: 14px;
+  bottom: 10px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  font-family: 'Georgia', serif;
+  color: rgba(255, 215, 150, 0.75);
+  text-shadow: 0 0 8px rgba(255, 200, 120, 0.35);
+  cursor: default;
+  user-select: none;
 }
 
 .rune-decoration {

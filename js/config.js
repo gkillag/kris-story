@@ -111,6 +111,10 @@ const TG_STATS = {
   ],
 };
 
+// ============ ВЕРСИЯ ИГРЫ ============
+// Меняй с каждой правкой (1.0 -> 1.1 -> 1.2 ...) — отобразится в меню
+const GAME_VERSION = '1.1';
+
 // ============ ОБЩИЕ НАСТРОЙКИ ============
 const CONFIG = {
   // Имя в новелле
@@ -125,6 +129,7 @@ const CONFIG = {
 // Так как мы не используем ES-модули — делаем переменные глобальными,
 // чтобы другие скрипты видели их через window.
 window.TG_STATS = TG_STATS;
+window.GAME_VERSION = GAME_VERSION;
 window.CONFIG = CONFIG;
 window.NAME = CONFIG.herName;
 window.START_DATE = CONFIG.startDate;

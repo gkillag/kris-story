@@ -95,13 +95,35 @@ function formatStartDate() {
   return `с ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
+// ============ ВЕРСИЯ ИГРЫ ============
+function renderGameVersion() {
+  const el = document.getElementById('gameVersion');
+  if (!el) return;
+  el.textContent = 'v' + (window.GAME_VERSION || '0.0');
+  el.title = 'KRIS STORY · версия ' + (window.GAME_VERSION || '0.0');
+}
+
+// ============ СЧЁТЧИК ДНЕЙ В МЕНЮ ============
+function renderMenuDays() {
+  const numEl = document.getElementById('menuDaysNum');
+  const sinceEl = document.getElementById('menuSince');
+  if (!numEl || !sinceEl) return;
+  const days = calcDaysSince();
+  numEl.textContent = days.toLocaleString('ru-RU');
+  sinceEl.textContent = formatStartDate();
+}
+
 // ============ ИНИЦИАЛИЗАЦИЯ ============
 document.addEventListener('DOMContentLoaded', () => {
   // Загружаем настройки звука ещё раз (на случай, если audio.js не успел)
   if (typeof loadSettings === 'function') loadSettings();
 
+  // Версия игры и дни вместе в меню
+  renderGameVersion();
+  renderMenuDays();
+
   // Приветствие в консоли — для тебя
-  console.log('%c🎭 KRIS STORY', 'color: #c9a3ff; font-size: 20px; font-weight: bold;');
+  console.log('%c🎭 KRIS STORY v' + (window.GAME_VERSION || '?'), 'color: #c9a3ff; font-size: 20px; font-weight: bold;');
   console.log('%cДанных из TG: ' + (window.TG_STATS ? window.TG_STATS.totalMessages : '—') + ' сообщений',
               'color: #9d6ee8; font-size: 12px;');
 });
@@ -114,3 +136,5 @@ window.backToMenu = backToMenu;
 window.showToast = showToast;
 window.calcDaysSince = calcDaysSince;
 window.formatStartDate = formatStartDate;
+window.renderGameVersion = renderGameVersion;
+window.renderMenuDays = renderMenuDays;

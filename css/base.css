@@ -289,6 +289,28 @@ button.secondary {
 }
 button.secondary:hover { background: rgba(200, 150, 255, 0.25); }
 
+/* Главная кнопка меню — золотое свечение */
+button.primary {
+  animation: primaryGlow 2.6s ease-in-out infinite;
+}
+@keyframes primaryGlow {
+  0%, 100% {
+    box-shadow:
+      0 10px 30px rgba(160, 100, 255, 0.4),
+      0 0 20px rgba(200, 150, 255, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 12px 38px rgba(255, 170, 220, 0.55),
+      0 0 34px rgba(255, 200, 130, 0.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-aura, .menu-crest, .menu-crest .crest-heart, .menu-ticker span,
+  .game-version, button.primary, .stats-button { animation: none !important; }
+}
+
 .back-btn {
   margin-top: 22px;
   max-width: 200px;
