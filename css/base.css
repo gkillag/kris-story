@@ -188,20 +188,40 @@ body {
 
 .card {
   position: relative;
-  background: rgba(20, 8, 25, 0.72);
+  background:
+    radial-gradient(ellipse 120% 80% at 50% -10%, rgba(90, 60, 30, 0.18), transparent 55%),
+    linear-gradient(rgba(212, 175, 55, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 175, 55, 0.04) 1px, transparent 1px),
+    rgba(20, 10, 24, 0.82);
+  background-size: auto, 34px 34px, 34px 34px, auto;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(200, 150, 255, 0.25);
-  border-radius: 30px;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 14px;
   padding: 32px 24px;
   text-align: center;
   box-shadow:
     0 25px 70px rgba(0, 0, 0, 0.6),
-    0 0 60px rgba(160, 100, 255, 0.2) inset;
+    inset 0 0 0 1px rgba(212, 175, 55, 0.1),
+    inset 0 0 60px rgba(0, 0, 0, 0.45);
   max-height: 92vh;
   overflow-y: auto;
   scrollbar-width: none;
   animation: cardIn 1s ease;
+}
+/* Золотые уголки-«заклёпки» переплёта */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  pointer-events: none;
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(212, 175, 55, 0.55) 0 14px, transparent 14px) top left / 26px 26px no-repeat,
+    linear-gradient(-135deg, rgba(212, 175, 55, 0.55) 0 14px, transparent 14px) top right / 26px 26px no-repeat,
+    linear-gradient(45deg, rgba(212, 175, 55, 0.55) 0 14px, transparent 14px) bottom left / 26px 26px no-repeat,
+    linear-gradient(-45deg, rgba(212, 175, 55, 0.55) 0 14px, transparent 14px) bottom right / 26px 26px no-repeat;
+  opacity: 0.85;
 }
 .card::-webkit-scrollbar { display: none; }
 
@@ -308,7 +328,8 @@ button.primary {
 
 @media (prefers-reduced-motion: reduce) {
   .menu-aura, .menu-crest, .menu-crest .crest-heart, .menu-ticker span,
-  .game-version, button.primary, .stats-button { animation: none !important; }
+  .game-version, button.primary, .stats-button, .dust-mote,
+  #stageMenu button.primary { animation: none !important; }
 }
 
 .back-btn {
@@ -485,4 +506,4 @@ input[type="range"]::-moz-range-thumb {
   background: #fff;
   pointer-events: none;
   z-index: 2;
-}
+}

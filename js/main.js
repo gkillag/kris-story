@@ -113,6 +113,21 @@ function renderMenuDays() {
   sinceEl.textContent = formatStartDate();
 }
 
+// ============ ИСКРЫ ФОНА (меню, стиль «книга») ============
+function spawnMenuMotes() {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const count = window.innerWidth < 500 ? 10 : 18;
+  for (let i = 0; i < count; i++) {
+    const m = document.createElement('div');
+    m.className = 'dust-mote';
+    m.style.setProperty('--x', (Math.random() * 100).toFixed(2) + 'vw');
+    m.style.setProperty('--dur', (12 + Math.random() * 14).toFixed(1) + 's');
+    m.style.setProperty('--delay', (-Math.random() * 20).toFixed(1) + 's');
+    m.style.setProperty('--drift', ((Math.random() - 0.5) * 120).toFixed(0) + 'px');
+    document.body.appendChild(m);
+  }
+}
+
 // ============ ИНИЦИАЛИЗАЦИЯ ============
 document.addEventListener('DOMContentLoaded', () => {
   // Загружаем настройки звука ещё раз (на случай, если audio.js не успел)
@@ -121,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Версия игры и дни вместе в меню
   renderGameVersion();
   renderMenuDays();
+  spawnMenuMotes();
 
   // Приветствие в консоли — для тебя
   console.log('%c🎭 KRIS STORY v' + (window.GAME_VERSION || '?'), 'color: #c9a3ff; font-size: 20px; font-weight: bold;');
@@ -137,4 +153,4 @@ window.showToast = showToast;
 window.calcDaysSince = calcDaysSince;
 window.formatStartDate = formatStartDate;
 window.renderGameVersion = renderGameVersion;
-window.renderMenuDays = renderMenuDays;
+window.renderMenuDays = renderMenuDays;
