@@ -1,6 +1,6 @@
-// ============ РЕДАКТОР СЦЕН (v1.3, базовая версия) ============
-// Блочный редактор сценария в стиле «тёмной книги».
-// Каждый блок — одна строка синтаксиса (реплика, @команда, !директива).
+// ============ РЕДАКТОР СЦЕН (v1.4, упрощённый визуальный конструктор) ============
+// Никакого ручного написания кода: сцена собирается кнопками.
+// Каждый блок — готовый «кирпичик» с понятными полями (текст, имя, персонаж, фон...).
 // Готовый текст сохраняется в localStorage и скачивается как script.txt —
 // тот же формат, что читает движок новеллы (data/script.txt).
 
@@ -11,23 +11,59 @@ let editorBlocks = [];      // [{ id, kind, data }]
 let editorBlockSeq = 0;     // счётчик для id блоков
 let editorFileName = EDITOR_DEFAULT_NAME;
 
-// ---- справочник типов блоков (для <select>) ----
-const EDITOR_KINDS = [
-  ['narrator', 'Рассказчик (обычная строка)'],
-  ['dialogue', 'Реплика персонажа (Имя: текст)'],
-  ['comment',  'Комментарий (# / //)'],
-  ['blank',    'Пустая строка (разделитель сцен)'],
-  ['raw',      'Другое (@char, @bg, @fx, @if, ? выбор...)'],
-];
+// ---- типы блоков (kind -> метка для списка/фильтра) ----
+const KIND_LABELS = {
+  narrator: 'Текст', dialogue: 'Реплика', char: 'Персонаж', bg: 'Фон',
+  fx: 'Эффекты', flash: 'Вспышка', sfx: 'Звук', music: 'Музыка',
+  wait: 'Пауза', blank: 'Разделитель', comment: 'Комментарий', raw: 'Другое',
+};
 
-// Подсказки-примеры для поля raw
-const RAW_HINTS = [
-  '@char kriss-happy fade', '@char none',
-  '@bg tent-dark', '@fx fog flicker', '@fx none',
-  '@flash white', '@wait 2000', '@music sad-theme', '@sfx door-creak',
-  '@var trust += 1', '? Да', '? Нет',
-  '@if choice == "Да"', '@if trust >= 1', '@else', '@endif',
-  '! skip', '! auto 2500', '! speed 25', '@ns', '@cont',
+// ---- данные для выпадающих списков (совпадают с ассетами и движком) ----
+const CHAR_OPTIONS = [
+  ['none', 'Убрать всех'],
+  ['danya-neutral', 'Даня — спокойный'],
+  ['danya-smile', 'Даня — улыбается'],
+  ['danya-sad', 'Даня — грустный'],
+  ['kriss-neutral', 'Крисс — спокойная'],
+  ['kriss-happy', 'Крисс — счастливая'],
+  ['kriss-sad', 'Крисс — грустная'],
+];
+const BG_OPTIONS = [
+  ['tent-dark', 'Палатка (ночь)'],
+  ['camp-fire', 'Костёр'],
+  ['forest', 'Лес'],
+  ['sky', 'Небо'],
+  ['city', 'Город'],
+  ['none', 'Без фона (градиент)'],
+];
+const FX_OPTIONS = [
+  ['none', 'Выключить эффекты'],
+  ['fog', 'Туман'],
+  ['flicker', 'Мерцание'],
+  ['dust', 'Пылинки'],
+  ['rain', 'Дождь'],
+];
+const FLASH_OPTIONS = [['white', 'Белая'], ['blood', 'Кровавая'], ['none', 'Выключить']];
+const SFX_OPTIONS = [['door-creak', 'Скрип двери'], ['lock-click', 'Щелчок замка'], ['chime', 'Колокольчик'], ['heartbeat', 'Сердцебиение']];
+const MUSIC_OPTIONS = [['music-box', 'Музыкальная шкатулка'], ['sad-theme', 'Грустная тема'], ['none', 'Стоп музыка']];
+const WAIT_OPTIONS = [['800', 'Короткая (0.8 сек)'], ['2000', 'Средняя (2 сек)'], ['4000', 'Длинная (4 сек)']];
+
+// ---- мини-гайд: что делает каждая кнопка/функция ----
+const EDITOR_GUIDE = [
+  { t: '✎ Текст', d: 'Строка рассказчика — обычный текст без имени. Появляется над репликами, курсивом не выделяется.' },
+  { t: '💬 Реплика', d: 'Реплика персонажа: поле «Имя» + поле «Текст». В файле сохранится как «Имя: текст». Имя показывается над окном диалога.' },
+  { t: '👤 Персонаж', d: 'Показать спрайт на экране или убрать всех. Выбираете из списка (Даня / Крисс / убрать). Если PNG-файла ещё нет — движок покажет подстановочный силуэт 🎭.' },
+  { t: '🏞 Фон', d: 'Меняет задний план сцены. Файлы лежат в assets/bg/. Пока файла нет — показывается красивый градиент по названию.' },
+  { t: '✨ Эффекты', d: 'Атмосферные частицы поверх фона: туман, мерцание, пылинки, дождь. Можно выбрать сразу несколько. «Выключить» — остановить все.' },
+  { t: '⚡ Вспышка', d: 'Мгновенная вспышка на весь экран: белая (используется при переходах между сценами) или кровавая (драма).' },
+  { t: '🔊 Звук', d: 'Один короткий звук: скрип двери, щелчок замка, колокольчик, сердцебиение. Все звуки синтезируются игрой — файлы не нужны.' },
+  { t: '🎵 Музыка', d: 'Фоновая музыка зацикленно: «музыкальная шкатулка» или грустная тема. «Стоп» — выключить. Тоже синтезируется, mp3 не требуются.' },
+  { t: '⏸ Пауза', d: 'Задержка перед следующим блоком (0.8 / 2 / 4 секунды). Драматичные моменты лучше играть с паузой.' },
+  { t: '· · · Разделитель', d: 'Пустая строка. Означает конец одной сцены и начало новой: окно диалога очищается, эффект печати начинается заново.' },
+  { t: '❓ Выбор', d: 'Вопрос игроку с вариантами ответа. Добавьте блок «Выбор», затем под ним варианты вида «? Да», «? Нет» (кнопкой Другое → шаблон). Дальше можно добавить ветку «Если ответ...».' },
+  { t: '⑂ Если ответ...', d: 'Ветка: что показать, если игрок выбрал конкретный вариант. Внутри ветки — обычные блоки; закрыть её кнопкой «Конец ветки».' },
+  { t: '# Комментарий', d: 'Заметка для себя — игра её полностью игнорирует. Полезно размечать главы.' },
+  { t: '⚙ Другое', d: 'Любая команда синтаксиса вручную, если нужной кнопки нет (например ? Да, @var trust += 1, ! auto 2500). При выборе подсказки список вариантов меняется.' },
 ];
 
 function editorMakeId() { return ++editorBlockSeq; }
@@ -60,34 +96,89 @@ function editorInitShell() {
     <div class="editor-wrap">
       <div class="editor-header">
         <div class="editor-title">Редактор сцен</div>
-        <button class="secondary editor-close" onclick="backToMenuFromEditor()">✕ В меню</button>
+        <div class="editor-header-actions">
+          <button class="secondary ed-btn" onclick="editorToggleGuide()" id="edGuideBtn" title="Как работает каждая кнопка">? Справочник</button>
+          <button class="secondary editor-close" onclick="backToMenuFromEditor()">✕ В меню</button>
+        </div>
       </div>
 
+      <!-- мини-гайд (справочник), скрыт по умолчанию -->
+      <div class="editor-guide hidden" id="edGuide">
+        <div class="ed-guide-inner">
+          ${EDITOR_GUIDE.map((g) => `<div class="ed-guide-item"><b>${g.t}</b><span>${g.d}</span></div>`).join('')}
+        </div>
+      </div>
+
+      <!-- панель добавления: просто нажимаете кнопку нужного элемента -->
+      <div class="editor-addbar" id="edAddBar">
+        <button class="ed-add" onclick="editorQuickAdd('narrator')" title="Обычная строка текста">✎ Текст</button>
+        <button class="ed-add" onclick="editorQuickAdd('dialogue')" title="Реплика: имя + текст">💬 Реплика</button>
+        <button class="ed-add" onclick="editorQuickAdd('char')" title="Показать/убрать персонажа">👤 Персонаж</button>
+        <button class="ed-add" onclick="editorQuickAdd('bg')" title="Сменить фон">🏞 Фон</button>
+        <button class="ed-add" onclick="editorQuickAdd('fx')" title="Туман / дождь / пылинки">✨ Эффекты</button>
+        <button class="ed-add" onclick="editorQuickAdd('flash')" title="Белая или кровавая вспышка">⚡ Вспышка</button>
+        <button class="ed-add" onclick="editorQuickAdd('sfx')" title="Короткий звук">🔊 Звук</button>
+        <button class="ed-add" onclick="editorQuickAdd('music')" title="Фоновая музыка">🎵 Музыка</button>
+        <button class="ed-add" onclick="editorQuickAdd('wait')" title="Пауза перед следующим блоком">⏸ Пауза</button>
+        <button class="ed-add" onclick="editorQuickAdd('blank')" title="Конец сцены — новая сцена">· · · Разделитель</button>
+        <button class="ed-add" onclick="editorQuickAdd('comment')" title="Заметка для себя, игра её не показывает"># Комментарий</button>
+        <button class="ed-add ed-add-more" onclick="editorShowMore()" id="edMoreBtn" title="Выбор, ветвление и другие команды">⚙ Другое ▾</button>
+      </div>
+
+      <!-- расширенная панель: выбор, ветки, переменные -->
+      <div class="editor-more hidden" id="edMorePanel">
+        <div class="ed-more-group">
+          <span class="ed-more-label">Ветвление сюжета:</span>
+          <button class="ed-mini2" onclick="editorQuickAdd('choice')" title="Вопрос игроку — текст вопроса">❓ Вопрос с выбором</button>
+          <button class="ed-mini2" onclick="editorQuickAdd('option')" title="Вариант ответа «? Да»">▸ Вариант ответа</button>
+          <button class="ed-mini2" onclick="editorQuickAdd('ifblock')" title="Показать блоки, если игрок выбрал этот вариант">⑂ Если ответ…</button>
+          <button class="ed-mini2" onclick="editorQuickAdd('endif')" title="Закрыть ветку">⑃ Конец ветки</button>
+        </div>
+        <div class="ed-more-group">
+          <span class="ed-more-label">Прочее:</span>
+          <button class="ed-mini2" onclick="editorQuickAdd('raw')" title="Любая команда синтаксиса вручную">⚙ Команда вручную</button>
+          <button class="ed-mini2" onclick="editorInsertPreset('@var trust += 1')" title="Изменить скрытый счётчик доверия">Σ Переменная ±</button>
+          <button class="ed-mini2" onclick="editorInsertPreset('! auto 2500')" title="Автопрокрутка сцен">▶ Auto</button>
+          <button class="ed-mini2" onclick="editorInsertPreset('! skip')" title="Игрок может пропустить печать кликом">≫ Skip</button>
+        </div>
+      </div>
+
+      <!-- действия с файлом -->
       <div class="editor-toolbar">
-        <select id="edKindSelect" class="ed-select"></select>
-        <button class="primary ed-btn" onclick="editorAddBlock()" title="Добавить блок">＋ Добавить</button>
-        <button class="secondary ed-btn" onclick="editorOpenFileInput()" title="Загрузить .txt">⬆ Открыть файл</button>
+        <button class="primary ed-btn" onclick="editorPlayPreview()" title="Сразу проиграть то, что собрали">▶ Играть</button>
         <button class="secondary ed-btn" onclick="editorDownloadScript()" title="Скачать script.txt">⬇ Сохранить файл</button>
-        <button class="secondary ed-btn" onclick="editorPlayPreview()" title="Проиграть в новелле">▶ Играть</button>
+        <button class="secondary ed-btn" onclick="editorOpenFileInput()" title="Загрузить ранее сохранённый .txt">⬆ Открыть файл</button>
+        <button class="secondary ed-btn" onclick="editorResetDefault()" title="Вернуть встроенную демо-главу">⟲ Демо</button>
         <input type="file" id="edFileInput" accept=".txt,text/plain" style="display:none" onchange="editorHandleFile(event)">
-      </div>
-
-      <div class="editor-preview-bar">
-        <span class="ed-preview-label">Предпросмотр текста:</span>
-        <textarea id="edPreview" class="ed-preview" readonly spellcheck="false"></textarea>
       </div>
 
       <div class="editor-blocks" id="edBlocks"></div>
 
+      <details class="ed-preview-details">
+        <summary>📄 Предпросмотр готового текста (script.txt)</summary>
+        <textarea id="edPreview" class="ed-preview" readonly spellcheck="false"></textarea>
+      </details>
+
       <div class="editor-footer">
         <span id="edStatus" class="ed-status">—</span>
-        <button class="secondary ed-btn" onclick="editorResetDefault()" title="Вернуть встроенную демо-главу">⟲ Демо-сценарий</button>
+        <span class="ed-hint">Подсказка: нажмите «? Справочник» — там объяснение каждой кнопки</span>
       </div>
     </div>
   `;
+}
 
-  const sel = document.getElementById('edKindSelect');
-  sel.innerHTML = EDITOR_KINDS.map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+function editorToggleGuide() {
+  const g = document.getElementById('edGuide');
+  if (!g) return;
+  g.classList.toggle('hidden');
+  document.getElementById('edGuideBtn').textContent = g.classList.contains('hidden') ? '? Справочник' : '✕ Закрыть справочник';
+}
+
+function editorShowMore() {
+  const p = document.getElementById('edMorePanel');
+  if (!p) return;
+  p.classList.toggle('hidden');
+  document.getElementById('edMoreBtn').textContent = p.classList.contains('hidden') ? '⚙ Другое ▾' : '⚙ Другое ▴';
 }
 
 // ============ МОДЕЛЬ: блок -> строка текста ============
@@ -97,25 +188,54 @@ function blockToLine(b) {
     case 'dialogue': return (b.data.speaker || '').trim() ? `${(b.data.speaker || '').trim()}: ${b.data.text || ''}` : (b.data.text || '');
     case 'comment':  return b.data.line !== undefined ? b.data.line : `# ${b.data.text || ''}`;
     case 'blank':    return '';
+    case 'char':     return `@char ${b.data.char || 'none'}${b.data.anim ? ' ' + b.data.anim : ''}`;
+    case 'bg':       return `@bg ${b.data.bg || 'none'}`;
+    case 'fx':       return `@fx ${(b.data.fx || []).join(' ') || 'none'}`;
+    case 'flash':    return `@flash ${b.data.flash || 'white'}`;
+    case 'sfx':      return `@sfx ${b.data.sfx || ''}`;
+    case 'music':    return `@music ${b.data.music || 'none'}`;
+    case 'wait':     return `@wait ${b.data.ms || 1500}`;
+    case 'choice':   return b.data.text || 'Что выберешь?';
+    case 'option':   return `? ${b.data.text || 'Да'}`;
+    case 'ifblock':  return `@if choice == "${b.data.value || 'Да'}"`;
+    case 'endif':    return '@endif';
     case 'raw':      return b.data.line || '';
     default:         return '';
   }
 }
 
-// Строка текста -> блок модели
+// Строка текста -> блок модели (для загрузки файлов и демо-сценария)
 function lineToBlock(raw) {
   const b = { id: editorMakeId(), kind: 'raw', data: {} };
   const t = raw.trim();
 
   if (t === '') { b.kind = 'blank'; return b; }
-  // комментарии храним в исходном виде (kind='comment' + data.line),
-  // чтобы round-trip «текст -> блоки -> текст» был потерь-free
+  // комментарии храним в исходном виде, чтобы round-trip был без потерь
   if (/^(#|\/\/)/.test(t)) { b.kind = 'comment'; b.data.line = raw; return b; }
 
-  const m = t.match(/^([^:@!?\/#][^:]*?):\s(.+)$/);
-  if (m && !t.startsWith('@')) { b.kind = 'dialogue'; b.data.speaker = m[1].trim(); b.data.text = m[2]; return b; }
+  // @команды — распознаём и превращаем в понятные блоки со списками
+  let m;
+  if ((m = t.match(/^@char\s+(\S+)(?:\s+(\S+))?$/))) {
+    b.kind = 'char'; b.data = { char: m[1], anim: m[2] || 'fade' }; return b;
+  }
+  if ((m = t.match(/^@bg\s+(\S+)$/))) { b.kind = 'bg'; b.data = { bg: m[1] }; return b; }
+  if ((m = t.match(/^@fx\s+(.+)$/))) { b.kind = 'fx'; b.data = { fx: m[1].trim().split(/\s+/) }; return b; }
+  if ((m = t.match(/^@flash\s+(\S+)$/))) { b.kind = 'flash'; b.data = { flash: m[1] }; return b; }
+  if ((m = t.match(/^@sfx\s+(\S+)$/))) { b.kind = 'sfx'; b.data = { sfx: m[1] }; return b; }
+  if ((m = t.match(/^@music\s+(\S+)$/))) { b.kind = 'music'; b.data = { music: m[1] }; return b; }
+  if ((m = t.match(/^@wait\s+(\d+)$/))) { b.kind = 'wait'; b.data = { ms: m[1] }; return b; }
+  if ((m = t.match(/^@if\s+choice\s*==\s*"([^"]*)"$/))) { b.kind = 'ifblock'; b.data = { value: m[1] }; return b; }
+  if (/^@endif$/.test(t)) { b.kind = 'endif'; return b; }
+  if ((m = t.match(/^\?\s*(.+)$/))) { b.kind = 'option'; b.data = { text: m[1] }; return b; }
 
-  b.kind = 'raw'; b.data.line = raw; return b;
+  // реплика "Имя: текст"
+  if ((m = t.match(/^([^:@!?\/#][^:]*?):\s(.+)$/)) && !t.startsWith('@')) {
+    b.kind = 'dialogue'; b.data = { speaker: m[1].trim(), text: m[2] }; return b;
+  }
+  // обычная строка без знаков — рассказчик
+  if (!/^[@?!]/.test(t) && !t.includes(':')) { b.kind = 'narrator'; b.data = { text: raw }; return b; }
+
+  b.kind = 'raw'; b.data = { line: raw }; return b;
 }
 
 function editorGetText() {
@@ -153,17 +273,42 @@ function editorRenderBlocks() {
     } else if (b.kind === 'dialogue') {
       inner = `<input class="ed-input ed-speaker" data-id="${b.id}" data-field="speaker" value="${esc(b.data.speaker)}" placeholder="Имя">` +
               `<input class="ed-input" data-id="${b.id}" data-field="text" value="${esc(b.data.text)}" placeholder="Реплика…">`;
+    } else if (b.kind === 'char') {
+      inner = selectHtml('char', CHAR_OPTIONS, b.data.char || 'kriss-happy', 'Персонаж:') +
+              selectHtml('anim', [['fade', 'Плавный вход'], ['left', 'Слева'], ['right', 'Справа'], ['pop', 'Выпрыгивает']], b.data.anim || 'fade', 'Как появляется:');
+    } else if (b.kind === 'bg') {
+      inner = selectHtml('bg', BG_OPTIONS, b.data.bg || 'tent-dark', 'Фон:');
+    } else if (b.kind === 'fx') {
+      inner = `<span class="ed-fx-label">Эффекты:</span>` + FX_OPTIONS.map(([v, l]) =>
+        `<label class="ed-check"><input type="checkbox" data-id="${b.id}" data-fx="${v}" ${(b.data.fx || []).includes(v) ? 'checked' : ''}> ${l}</label>`).join('');
+    } else if (b.kind === 'flash') {
+      inner = selectHtml('flash', FLASH_OPTIONS, b.data.flash || 'white', 'Вспышка:');
+    } else if (b.kind === 'sfx') {
+      inner = selectHtml('sfx', SFX_OPTIONS, b.data.sfx || 'door-creak', 'Звук:');
+    } else if (b.kind === 'music') {
+      inner = selectHtml('music', MUSIC_OPTIONS, b.data.music || 'music-box', 'Музыка:');
+    } else if (b.kind === 'wait') {
+      inner = selectHtml('ms', WAIT_OPTIONS, String(b.data.ms || '2000'), 'Длительность паузы:');
+    } else if (b.kind === 'choice') {
+      inner = `<input class="ed-input" data-id="${b.id}" data-field="text" value="${esc(b.data.text)}" placeholder="Вопрос игроку, например: «Ты поцелуешь меня?»">`;
+    } else if (b.kind === 'option') {
+      inner = `<span class="ed-opt-sign">?</span><input class="ed-input" data-id="${b.id}" data-field="text" value="${esc(b.data.text)}" placeholder="Текст варианта (например: Да)">`;
+    } else if (b.kind === 'ifblock') {
+      inner = `<span class="ed-if-label">Если игрок выбрал:</span><input class="ed-input ed-mono" data-id="${b.id}" data-field="value" value="${esc(b.data.value)}" placeholder="Да">`;
+    } else if (b.kind === 'endif') {
+      inner = `<span class="ed-blank-label">⑃ конец ветки «если»</span>`;
     } else if (b.kind === 'comment') {
       inner = `<input class="ed-input ed-mono" data-id="${b.id}" data-field="line" value="${esc(b.data.line !== undefined ? b.data.line : '# ' + (b.data.text || ''))}" placeholder="# комментарий…">`;
     } else if (b.kind === 'blank') {
-      inner = `<span class="ed-blank-label">· · · пустая строка (новая сцена) · · ·</span>`;
+      inner = `<span class="ed-blank-label">· · · разделитель сцен · · ·</span>`;
     } else {
-      inner = `<input class="ed-input ed-mono" data-id="${b.id}" data-field="line" value="${esc(b.data.line)}" list="edRawHints" placeholder="@char kriss-happy fade">`;
+      inner = `<input class="ed-input ed-mono" data-id="${b.id}" data-field="line" value="${esc(b.data.line)}" list="edRawHints" placeholder="@var trust += 1">`;
     }
 
     return `
       <div class="ed-block ed-kind-${b.kind}">
         <span class="ed-num">${i + 1}</span>
+        <span class="ed-kind-tag">${KIND_LABELS[b.kind] || b.kind}</span>
         <div class="ed-fields">${inner}</div>
         <div class="ed-actions">
           <button class="ed-mini" onclick="editorMoveBlock(${b.id},-1)" title="Выше">↑</button>
@@ -172,7 +317,7 @@ function editorRenderBlocks() {
           <button class="ed-mini ed-del" onclick="editorDeleteBlock(${b.id})" title="Удалить">✕</button>
         </div>
       </div>`;
-  }).join('') + `<datalist id="edRawHints">${RAW_HINTS.map((h) => `<option value="${esc(h)}"></option>`).join('')}</datalist>`;
+  }).join('') + `<datalist id="edRawHints">${['@var trust += 1', '? Да', '? Нет', '@ns', '@cont', '! speed 25'].map((h) => `<option value="${esc(h)}"></option>`).join('')}</datalist>`;
 
   // live-обновление модели при вводе
   wrap.querySelectorAll('.ed-input').forEach((inp) => {
@@ -183,6 +328,43 @@ function editorRenderBlocks() {
       editorUpdatePreview();
     });
   });
+  // выпадающие списки (id блока берём из родительской строки .ed-block)
+  wrap.querySelectorAll('.ed-select-in').forEach((selEl) => {
+    selEl.addEventListener('change', () => {
+      const blockEl = selEl.closest('.ed-block');
+      const numEl = blockEl && blockEl.querySelector('.ed-num');
+      const idx = Number(numEl ? numEl.textContent : 0) - 1;
+      if (idx < 0 || idx >= editorBlocks.length) return;
+      editorBlocks[idx].data[selEl.dataset.field] = selEl.value;
+      editorUpdatePreview();
+    });
+  });
+  // чекбоксы эффектов
+  wrap.querySelectorAll('input[data-fx]').forEach((cb) => {
+    cb.addEventListener('change', () => {
+      const idx = editorFindIndex(Number(cb.dataset.id));
+      if (idx < 0) return;
+      const blk = editorBlocks[idx];
+      let list = (blk.data.fx || []).slice();
+      const v = cb.dataset.fx;
+      if (v === 'none') { list = cb.checked ? ['none'] : []; }
+      else {
+        list = list.filter((x) => x !== 'none');
+        if (cb.checked) list.push(v); else list = list.filter((x) => x !== v);
+      }
+      blk.data.fx = list;
+      editorUpdatePreview();
+    });
+  });
+}
+
+// helper: выпадающий список внутри блока
+// (data-id подставляется в шаблоне блока через замену заглушки)
+function selectHtml(field, options, current, label) {
+  return `<label class="ed-sel-wrap"><span class="ed-sel-label">${label}</span>` +
+    `<select class="ed-select-in" data-field="${field}">` +
+    options.map(([v, l]) => `<option value="${esc(v)}"${String(v) === String(current) ? ' selected' : ''}>${l}</option>`).join('') +
+    `</select></label>`;
 }
 
 function editorUpdatePreview() {
@@ -191,19 +373,53 @@ function editorUpdatePreview() {
 }
 
 // ============ ОПЕРАЦИИ НАД БЛОКАМИ ============
-function editorAddBlock() {
-  const kind = document.getElementById('edKindSelect').value;
-  const b = { id: editorMakeId(), kind, data: {} };
-  if (kind === 'dialogue') b.data = { speaker: '', text: '' };
-  else if (kind === 'raw' || kind === 'comment') b.data = { line: kind === 'comment' ? '# ' : '' };
-  else b.data = { text: '' };
+// Добавление блока по типу — просто нажимаете кнопку на панели.
+function editorQuickAdd(kind) {
+  let data;
+  switch (kind) {
+    case 'narrator': data = { text: '' }; break;
+    case 'dialogue': data = { speaker: '', text: '' }; break;
+    case 'char':     data = { char: 'kriss-happy', anim: 'fade' }; break;
+    case 'bg':       data = { bg: 'tent-dark' }; break;
+    case 'fx':       data = { fx: ['fog'] }; break;
+    case 'flash':    data = { flash: 'white' }; break;
+    case 'sfx':      data = { sfx: 'door-creak' }; break;
+    case 'music':    data = { music: 'music-box' }; break;
+    case 'wait':     data = { ms: '2000' }; break;
+    case 'blank':    data = {}; break;
+    case 'comment':  data = { line: '# ' }; break;
+    case 'choice':   data = { text: '' }; break;
+    case 'option':   data = { text: 'Да' }; break;
+    case 'ifblock':  data = { value: 'Да' }; break;
+    case 'endif':    data = {}; break;
+    default:         kind = 'raw'; data = { line: '' };
+  }
+  const b = { id: editorMakeId(), kind, data };
+  // новые блоки вставляем после последнего выделенного? пока — в конец
   editorBlocks.push(b);
   editorRenderBlocks();
   editorUpdatePreview();
   const wrap = document.getElementById('edBlocks');
-  const last = wrap.querySelector('.ed-block:last-of-type .ed-input');
-  if (last) last.focus();
+  const blocks = wrap.querySelectorAll('.ed-block');
+  const lastEl = blocks[blocks.length - 1];
+  if (lastEl) {
+    lastEl.classList.add('ed-new');
+    setTimeout(() => lastEl.classList.remove('ed-new'), 700);
+    const inp = lastEl.querySelector('input.ed-input');
+    if (inp) { inp.focus(); inp.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+    else lastEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
 }
+
+// Вставить готовый пресет командой вручную (для продвинутых кнопок)
+function editorInsertPreset(line) {
+  editorBlocks.push({ id: editorMakeId(), kind: 'raw', data: { line } });
+  editorRenderBlocks();
+  editorUpdatePreview();
+}
+
+// Совместимость: старый вызов editorAddBlock() -> quick add narrator
+function editorAddBlock() { editorQuickAdd('narrator'); }
 
 function editorDeleteBlock(id) {
   const i = editorFindIndex(id);
@@ -331,6 +547,10 @@ setInterval(() => {
 // ============ ЭКСПОРТ ============
 window.openEditor = openEditor;
 window.backToMenuFromEditor = backToMenuFromEditor;
+window.editorQuickAdd = editorQuickAdd;
+window.editorInsertPreset = editorInsertPreset;
+window.editorToggleGuide = editorToggleGuide;
+window.editorShowMore = editorShowMore;
 window.editorAddBlock = editorAddBlock;
 window.editorDeleteBlock = editorDeleteBlock;
 window.editorDuplicateBlock = editorDuplicateBlock;
