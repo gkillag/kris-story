@@ -43,10 +43,14 @@ function hideSettings() {
 // ============ ВОЗВРАТ В МЕНЮ ============
 function backToMenu() {
   // Скрываем все экраны
-  ['stageStats', 'stageCredits', 'stageCalendar', 'stageSettings', 'stageDemo'].forEach((id) => {
+  ['stageStats', 'stageCredits', 'stageCalendar', 'stageSettings', 'stageDemo', 'stageEditor'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.classList.add('hidden');
   });
+
+  // Сценарий из редактора действует только для текущего захода —
+  // при выходе в меню возвращаем встроенный data/script.txt.
+  window.CUSTOM_SCRIPT_TEXT = null;
 
   if (typeof stopCredits === 'function') stopCredits();
 

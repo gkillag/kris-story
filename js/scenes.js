@@ -82,9 +82,14 @@ async function startScenes() {
   s.classList.remove('hidden');
   s.classList.add('stage-fade');
 
-  // Загружаем сценарий через парсер
+  // Загружаем сценарий: если редактор передал свой текст — парсим его,
+  // иначе грузим data/script.txt через fetch.
   try {
-    SCENES = await loadScript('data/script.txt');
+    if (window.CUSTOM_SCRIPT_TEXT) {
+      SCENES = parseScript(window.CUSTOM_SCRIPT_TEXT);
+    } else {
+      SCENES = await loadScript('data/script.txt');
+    }
   } catch (err) {
     console.error('Ошибка загрузки script.txt:', err);
     s.innerHTML = `

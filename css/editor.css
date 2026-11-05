@@ -1,0 +1,226 @@
+/* ============ РЕДАКТОР СЦЕН — стиль «тёмная книга» ============ */
+
+#stageEditor { padding: 10px 0; }
+
+.editor-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: #e8d5ee;
+}
+
+/* --- шапка --- */
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.editor-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 24px;
+  letter-spacing: 2px;
+  color: #d4af37;
+  text-shadow: 0 0 18px rgba(212, 175, 55, 0.35);
+}
+
+.editor-close { margin: 0 !important; padding: 8px 14px !important; }
+
+/* --- панель инструментов --- */
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  border-radius: 10px;
+  background: linear-gradient(160deg, rgba(46, 26, 68, 0.55), rgba(20, 10, 32, 0.65));
+}
+
+.ed-select {
+  flex: 1 1 220px;
+  min-width: 180px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: #1c1030;
+  color: #f0e6f6;
+  font-size: 14px;
+  outline: none;
+}
+
+.ed-btn {
+  margin: 0 !important;
+  padding: 9px 13px !important;
+  font-size: 13.5px !important;
+}
+
+/* --- предпросмотр текста сценария --- */
+.editor-preview-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ed-preview-label {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.75);
+}
+
+.ed-preview {
+  width: 100%;
+  height: 90px;
+  resize: vertical;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(155, 107, 217, 0.3);
+  background: rgba(12, 6, 22, 0.75);
+  color: #bfa9d6;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre;
+  overflow: auto;
+}
+
+/* --- список блоков --- */
+.editor-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 46vh;
+  overflow-y: auto;
+  padding: 4px 6px 4px 4px;
+  overscroll-behavior: contain;
+}
+
+.editor-blocks::-webkit-scrollbar { width: 6px; }
+.editor-blocks::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.04); border-radius: 3px; }
+.editor-blocks::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.4); border-radius: 3px; }
+
+.ed-empty {
+  padding: 26px 10px;
+  text-align: center;
+  font-style: italic;
+  color: rgba(232, 213, 238, 0.55);
+  border: 1px dashed rgba(212, 175, 55, 0.3);
+  border-radius: 10px;
+}
+
+.ed-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 9px;
+  border: 1px solid rgba(155, 107, 217, 0.22);
+  border-left: 3px solid rgba(155, 107, 217, 0.55);
+  background: linear-gradient(150deg, rgba(38, 20, 58, 0.65), rgba(18, 9, 30, 0.7));
+  transition: border-color 0.2s ease, transform 0.15s ease;
+}
+
+.ed-block:hover {
+  border-color: rgba(212, 175, 55, 0.45);
+  border-left-color: #d4af37;
+}
+
+/* цветовые акценты по типу блока */
+.ed-kind-dialogue { border-left-color: rgba(240, 130, 180, 0.7); }
+.ed-kind-comment  { border-left-color: rgba(120, 120, 140, 0.6); opacity: 0.85; }
+.ed-kind-raw      { border-left-color: rgba(110, 200, 255, 0.55); }
+.ed-kind-blank    { border-left-color: transparent; background: none; border-top: 1px dashed rgba(212, 175, 55, 0.18); border-bottom: none; border-left: none; border-right: none; border-radius: 0; padding: 3px 10px; }
+
+.ed-num {
+  flex: 0 0 auto;
+  min-width: 26px;
+  text-align: right;
+  font-family: Georgia, serif;
+  font-size: 12px;
+  color: rgba(212, 175, 55, 0.6);
+}
+
+.ed-fields {
+  flex: 1 1 auto;
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ed-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 7px;
+  border: 1px solid rgba(155, 107, 217, 0.25);
+  background: rgba(12, 6, 22, 0.7);
+  color: #f0e6f6;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ed-input:focus {
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.12);
+}
+
+.ed-speaker { flex: 0 0 110px; color: #f2c4d8; }
+.ed-mono { font-family: 'Consolas', 'Courier New', monospace; font-size: 13px; color: #a8dcff; }
+
+.ed-hash { color: rgba(160, 160, 180, 0.7); font-family: monospace; }
+.ed-blank-label { font-size: 12px; font-style: italic; color: rgba(232, 213, 238, 0.4); }
+
+.ed-actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 4px;
+}
+
+.ed-mini {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 7px;
+  border: 1px solid rgba(155, 107, 217, 0.3);
+  background: rgba(30, 16, 48, 0.8);
+  color: #cbb3dd;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ed-mini:hover {
+  border-color: rgba(212, 175, 55, 0.6);
+  color: #ffd76a;
+  transform: translateY(-1px);
+}
+
+.ed-del:hover { border-color: rgba(255, 90, 90, 0.7); color: #ff8080; }
+
+/* --- футер --- */
+.editor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ed-status {
+  font-size: 12.5px;
+  font-style: italic;
+  color: rgba(212, 175, 55, 0.8);
+}
+
+/* --- мобильная адаптация --- */
+@media (max-width: 520px) {
+  .editor-toolbar { gap: 6px; }
+  .ed-btn { flex: 1 1 45%; text-align: center; }
+  .ed-speaker { flex-basis: 84px; }
+  .editor-blocks { max-height: 40vh; }
+  .editor-title { font-size: 20px; }
+}

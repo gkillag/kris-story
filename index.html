@@ -11,7 +11,8 @@
 <link rel="stylesheet" href="css/stats.css">
 <link rel="stylesheet" href="css/credits.css">
 <link rel="stylesheet" href="css/calendar.css">
-<link rel="stylesheet" href="css/scenes.css">  
+<link rel="stylesheet" href="css/scenes.css">
+<link rel="stylesheet" href="css/editor.css">  
 </head>
 <body>
 
@@ -62,6 +63,7 @@
         <button class="stats-button" onclick="openStats()">Статистика</button>
         <button class="secondary" onclick="openCalendar()">Календарь</button>
         <button class="secondary" onclick="openCredits()">Титры</button>
+        <button class="secondary" onclick="openEditor()">Редактор сцен</button>
         <button class="secondary" onclick="showSettings()">Настройки</button>
       </div>
       <div class="menu-ticker"><span>✦ 66 489 сообщений ✦ 592 дня переписки ✦ глава 1: встреча ✦ выбор за тобой ✦ сделано с любовью для Крисс ✦</span></div>
@@ -208,6 +210,9 @@
       </div>
     </div>
 
+    <!-- РЕДАКТОР СЦЕН -->
+    <div id="stageEditor" class="hidden"></div>
+
     <!-- ТИТРЫ -->
     <div id="stageCredits" class="hidden">
       <div class="credits-stage">
@@ -306,6 +311,7 @@
 <script src="js/effects.js"></script>
 <script src="js/parser.js"></script>          <!-- НОВЫЙ -->
 <script src="js/scenes.js"></script>          <!-- ОБНОВЛЁННЫЙ -->
+<script src="js/editor.js"></script>          <!-- РЕДАКТОР СЦЕН -->
 <script src="js/stats.js"></script>
 <script src="js/credits.js"></script>
 <script src="js/calendar.js"></script>
